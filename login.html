@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Login | Stackly Logistics &amp; Transportation</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --teal: #175e60;
+      --teal-d: #0f4446;
+      --yellow: #ffd54a;
+      --ink: #10282a;
+      --muted: #6f8082;
+      --line: #e1ebeb
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      background: radial-gradient(circle at 15% 20%, #2a8a8d40, transparent 40%), radial-gradient(circle at 85% 80%, #ffd54a22, transparent 35%), linear-gradient(160deg, #082b2d, #0f4446 55%, #175e60);
+      position: relative;
+      overflow-x: hidden
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, #ffffff07 0 1px, transparent 1px 64px), repeating-linear-gradient(0deg, #ffffff07 0 1px, transparent 1px 64px);
+      animation: grid 16s linear infinite;
+      pointer-events: none
+    }
+
+    .map {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none
+    }
+
+    .route {
+      fill: none;
+      stroke: #ffd54a;
+      stroke-width: 2;
+      stroke-dasharray: 6 12;
+      opacity: .55;
+      animation: dash 1.4s linear infinite
+    }
+
+    .route.r2 {
+      stroke: #fff;
+      opacity: .25;
+      animation-duration: 2.2s
+    }
+
+    .city {
+      fill: #ffd54a;
+      animation: ping 2.4s ease-out infinite;
+      transform-box: fill-box;
+      transform-origin: center
+    }
+
+    .road {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 26px;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, var(--yellow) 0 26px, transparent 26px 52px);
+      opacity: .6;
+      animation: roadmove 1s linear infinite;
+      pointer-events: none
+    }
+
+    .truck {
+      position: fixed;
+      bottom: 34px;
+      left: -100px;
+      font-size: 42px;
+      color: #fff;
+      animation: drive 12s linear infinite;
+      pointer-events: none
+    }
+
+    .truck i {
+      display: block;
+      animation: bump .5s ease-in-out infinite
+    }
+
+    .bar {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px clamp(18px, 4vw, 56px)
+    }
+
+    .bar img {
+      height: 54px;
+      width: auto;
+      max-width: 200px;
+      object-fit: contain;
+      display: block
+    }
+
+    .bar a.back {
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 18px;
+      border: 1px solid #ffffff40;
+      border-radius: 30px;
+      transition: .3s
+    }
+
+    .bar a.back:hover {
+      background: var(--yellow);
+      color: var(--teal-d);
+      border-color: var(--yellow)
+    }
+
+    .stage {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 16px 110px
+    }
+
+    .hello {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 62px;
+      animation: rise .7s both
+    }
+
+    .hello .kicker {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      font-weight: 800
+    }
+
+    .hello h1 {
+      font: 800 clamp(30px, 4.5vw, 54px)/1.08 Manrope, sans-serif;
+      letter-spacing: -1.5px;
+      margin: 12px 0 0
+    }
+
+    .hello h1 span {
+      color: var(--yellow)
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      background: #fff;
+      border-radius: 24px;
+      padding: 62px clamp(24px, 4vw, 46px) 36px;
+      box-shadow: 0 30px 80px #00000040;
+      animation: pop .8s .15s both
+    }
+
+    .badge {
+      position: absolute;
+      top: -38px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: var(--yellow);
+      color: var(--teal-d);
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      border: 6px solid #0f4446;
+      box-shadow: 0 10px 25px #0004;
+      animation: bob 3s ease-in-out infinite
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #eef5f5;
+      border-radius: 12px;
+      padding: 5px;
+      margin-bottom: 26px
+    }
+
+    .tabs a {
+      text-align: center;
+      padding: 11px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--muted);
+      transition: .3s
+    }
+
+    .tabs a.on {
+      background: var(--teal);
+      color: #fff;
+      box-shadow: 0 6px 16px #175e6040
+    }
+
+    .tabs a:not(.on):hover {
+      color: var(--teal)
+    }
+
+    .card h2 {
+      font: 800 30px Manrope, sans-serif;
+      margin: 0 0 6px;
+      text-align: center
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+      margin: 0 0 24px;
+      text-align: center
+    }
+
+    .field {
+      margin: 0 0 15px;
+      min-width: 0;
+      animation: rise .6s both
+    }
+
+    .field:nth-of-type(1) {
+      animation-delay: .3s
+    }
+
+    .field:nth-of-type(2) {
+      animation-delay: .4s
+    }
+
+    .field:nth-of-type(3) {
+      animation-delay: .5s
+    }
+
+    .field:nth-of-type(4) {
+      animation-delay: .6s
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 7px
+    }
+
+    .ic {
+      position: relative
+    }
+
+    .ic>i.lead {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8aa5a6;
+      font-size: 14px;
+      transition: .3s
+    }
+
+    .control {
+      width: 100%;
+      height: 50px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0 15px 0 42px;
+      font: 14px 'DM Sans';
+      outline: none;
+      background: #f9fcfc;
+      transition: .25s
+    }
+
+    .control:focus {
+      border-color: var(--teal);
+      background: #fff;
+      box-shadow: 0 0 0 4px #175e601a
+    }
+
+    .ic:focus-within>i.lead {
+      color: var(--teal)
+    }
+
+    .err {
+      font-size: 11px;
+      color: #c0392b;
+      display: block;
+      margin-top: 5px;
+      min-height: 13px
+    }
+
+    .hint {
+      display: block;
+      color: var(--muted);
+      font-size: 10.5px;
+      line-height: 1.6;
+      margin-top: 5px
+    }
+
+    .submit {
+      width: 100%;
+      height: 54px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(90deg, var(--teal), #1d7b7e);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+      transition: .3s
+    }
+
+    .submit::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -60%;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #ffffff45, transparent);
+      transform: skewX(-20deg);
+      animation: shine 3.5s infinite
+    }
+
+    .submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px #175e6050
+    }
+
+    .submit i {
+      margin-left: 6px;
+      transition: .3s
+    }
+
+    .submit:hover i {
+      transform: translateX(6px)
+    }
+
+    .status {
+      font-size: 12px;
+      text-align: center;
+      margin: 12px 0 0;
+      min-height: 16px;
+      color: #b42318
+    }
+
+    .switch {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 14px
+    }
+
+    .switch a,
+    .terms a {
+      color: var(--teal);
+      font-weight: 800;
+      text-decoration: none
+    }
+
+    .stats {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 34px;
+      animation: rise .8s .5s both
+    }
+
+    .stats div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff14;
+      border: 1px solid #ffffff26;
+      backdrop-filter: blur(6px);
+      color: #fff;
+      border-radius: 40px;
+      padding: 10px 18px;
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    .stats i {
+      color: var(--yellow)
+    }
+
+    .shake {
+      animation: shake .4s
+    }
+
+    @keyframes grid {
+      to {
+        background-position: 64px 64px
+      }
+    }
+
+    @keyframes dash {
+      to {
+        stroke-dashoffset: -18
+      }
+    }
+
+    @keyframes ping {
+      0% {
+        transform: scale(1);
+        opacity: 1
+      }
+
+      100% {
+        transform: scale(3.2);
+        opacity: 0
+      }
+    }
+
+    @keyframes roadmove {
+      to {
+        background-position: -52px 0
+      }
+    }
+
+    @keyframes drive {
+      to {
+        left: 105%
+      }
+    }
+
+    @keyframes bump {
+      50% {
+        transform: translateY(-2px)
+      }
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(24px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        transform: translateY(40px) scale(.96)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes bob {
+      50% {
+        transform: translateX(-50%) translateY(-6px)
+      }
+    }
+
+    @keyframes shine {
+
+      60%,
+      100% {
+        left: 130%
+      }
+    }
+
+    @keyframes shake {
+      25% {
+        transform: translateX(-8px)
+      }
+
+      75% {
+        transform: translateX(8px)
+      }
+    }
+
+    @media(max-width:520px) {
+      .bar img {
+        height: 44px
+      }
+
+      .stats div {
+        padding: 8px 13px;
+        font-size: 11px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important
+      }
+    }
+
+    .card {
+      max-width: 460px
+    }
+
+    .remember {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin: 4px 0 14px
+    }
+
+    .remember a {
+      color: var(--teal);
+      text-decoration: none;
+      font-weight: 700
+    }
+
+    .eye {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      color: var(--teal);
+      cursor: pointer;
+      width: 34px;
+      height: 34px
+    }
+
+    html, body {
+
+    overflow-x: hidden;
+
+    width: 100%;
+
+}
+ 
+  </style>
+</head>
+
+<body>
+  <svg class="map" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path id="r1" class="route" d="M-40 640 C280 380 520 720 800 470 S1180 220 1480 360" />
+    <path id="r2" class="route r2" d="M-40 200 C300 120 560 330 820 250 S1200 480 1480 560" />
+    <circle class="city" cx="270" cy="470" r="5" />
+    <circle class="city" cx="800" cy="470" r="5" style="animation-delay:.8s" />
+    <circle class="city" cx="1180" cy="290" r="5" style="animation-delay:1.6s" />
+    <circle class="city" cx="560" cy="280" r="5" style="animation-delay:1.2s" />
+    <g fill="#ffd54a">
+      <path d="M-10 0 L12 0 L-10 -8 Z M-10 0 L12 0 L-10 8 Z">
+        <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+          <mpath href="#r1" />
+        </animateMotion>
+      </path>
+    </g>
+    <g fill="#fff">
+      <circle r="5">
+        <animateMotion dur="18s" repeatCount="indefinite">
+          <mpath href="#r2" />
+        </animateMotion>
+      </circle>
+    </g>
+  </svg>
+  <div class="road"></div>
+  <div class="truck"><i class="fa-solid fa-truck-fast"></i></div>
+  <header class="bar"><a href="index.html" aria-label="Stackly Logistics home"><img src="assets/img/logo.webp"
+        alt="Stackly Logistics logo" /></a><a class="back" href="index.html"><i class="fa-solid fa-arrow-left"></i> Back
+      to website</a></header>
+  <main class="stage">
+    <div class="hello"><span class="kicker">Moving your business forward</span>
+      <h1>Welcome back to your <span>shipments.</span></h1>
+    </div>
+    <section class="card" id="card">
+      <div class="badge"><i class="fa-solid fa-truck-fast"></i></div>
+      <div class="tabs"><a class="on" href="login.html">Sign in</a><a href="signup.html">Create account</a></div>
+      <h2>Sign in</h2>
+      <p class="sub">Enter your details to track deliveries and manage freight bookings.</p>
+      <form id="loginForm" novalidate>
+        <div class="field"><label for="role">SIGN IN AS</label>
+          <div class="ic"><i class="fa-solid fa-user-tag lead"></i><select class="control" id="role">
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+            </select></div><small class="err" id="roleErr"></small>
+        </div>
+        <div class="field"><label for="email">EMAIL ADDRESS</label>
+          <div class="ic"><i class="fa-regular fa-envelope lead"></i><input autocomplete="username" class="control"
+              id="email" placeholder="name@example.com" type="email" /></div><small class="err" id="emailErr"></small>
+        </div>
+        <div class="field"><label for="password">PASSWORD</label>
+          <div class="ic"><i class="fa-solid fa-lock lead"></i><input aria-describedby="passHint passErr"
+              autocomplete="current-password" class="control" id="password" maxlength="128"
+              placeholder="Enter your password" type="password" /><button aria-label="Show password" class="eye"
+              id="togglePass" type="button"><i class="fa-regular fa-eye"></i></button></div><small class="hint"
+            id="passHint">Use at least 8 characters, including uppercase and lowercase letters, a number and a symbol.
+            No spaces.</small><small class="err" id="passErr"></small>
+        </div>
+        <div class="remember"><label><input id="remember" type="checkbox" /> Remember me</label><a
+            href="404.html">Forgot password?</a></div>
+        <button class="submit" type="submit">Sign in to dashboard <i class="fa-solid fa-arrow-right"></i></button>
+        <p class="status" id="status" role="alert"></p>
+        <div class="switch">New to Stackly? <a href="signup.html">Create an account</a></div>
+      </form>
+    </section>
+    <div class="stats">
+      <div><i class="fa-solid fa-location-dot"></i>Live tracking</div>
+      <div><i class="fa-solid fa-globe"></i>120+ destinations</div>
+      <div><i class="fa-solid fa-clock"></i>On-time delivery</div>
+    </div>
+  </main>
+  <script>
+    const $ = id => document.getElementById(id);
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const strongPasswordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S{8,128}$/;
+
+    // Role-wise dashboard pages
+    const DASHBOARD = {
+      admin: 'admin-dashboard.html',
+      customer: 'customer-dashboard.html'
+    };
+
+    $('togglePass').addEventListener('click', () => {
+      const f = $('password'), show = f.type === 'password';
+      f.type = show ? 'text' : 'password';
+      $('togglePass').innerHTML = show ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+      $('togglePass').setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    });
+
+    $('loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const email = $('email').value.trim(), password = $('password').value;
+      const role = $('role').value;
+      const errors = {
+        roleErr: DASHBOARD[role] ? '' : 'Choose a valid account type.',
+        emailErr: emailPattern.test(email) ? '' : 'Enter a valid email address, for example name@example.com.',
+        passErr: strongPasswordPattern.test(password) ? '' : 'Use 8–128 characters with uppercase, lowercase, a number and a symbol. Spaces are not allowed.'
+      };
+      let valid = true;
+      Object.entries(errors).forEach(([id, m]) => { $(id).textContent = m; if (m) valid = false; });
+      $('status').textContent = '';
+      if (!valid) {
+        $('status').textContent = 'Please correct the highlighted fields.';
+        $('card').classList.remove('shake'); void $('card').offsetWidth; $('card').classList.add('shake');
+        return;
+      }
+      const data = { email: email.toLowerCase(), role: role, loginTime: new Date().toISOString(), passwordConfigured: true }; // Never store the password.
+      try {
+        sessionStorage.setItem('stacklyLogin', JSON.stringify(data));
+        if ($('remember').checked) localStorage.setItem('stacklyEmail', data.email); else localStorage.removeItem('stacklyEmail');
+        $('status').style.color = '#247443';
+        $('status').textContent = 'Login successful! Redirecting to your ' + role + ' dashboard…';
+        setTimeout(() => { location.href = DASHBOARD[role]; }, 600);
+      } catch (err) {
+        $('status').textContent = 'Browser storage is unavailable. Please enable storage and try again.';
+      }
+    });
+
+    try { if (localStorage.getItem('stacklyEmail')) { $('email').value = localStorage.getItem('stacklyEmail'); $('remember').checked = true; } } catch (err) {}
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width,initial-scale=1" name="viewport" />
+  <title>Admin Dashboard | Stackly Logistics</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@700;800&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --teal: #175e60;
+      --teal-d: #0b3a3c;
+      --teal-l: #e3f1f1;
+      --yellow: #ffd54a;
+      --ink: #10282a;
+      --muted: #6f8082;
+      --line: #e3ecec;
+      --bg: #eef4f4;
+      --ok: #1f9d55;
+      --info: #2b7de9;
+      --bad: #e03e3e;
+      --warn: #e69b00
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink)
+    }
+
+    a {
+      text-decoration: none
+    }
+
+    .layout {
+      display: flex;
+      min-height: 100vh
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 14px auto 14px 14px;
+      width: 252px;
+      border-radius: 24px;
+      padding: 22px 16px;
+      background: linear-gradient(170deg, #0b3a3c, #175e60);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      z-index: 30;
+      transition: .35s;
+      overflow: hidden
+    }
+
+    .sidebar::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      border: 1px solid #ffd54a40;
+      right: -120px;
+      bottom: -90px;
+      box-shadow: 0 0 0 36px #ffd54a0d;
+      animation: pulse 5s ease-in-out infinite
+    }
+
+    .brand img {
+      width: 170px;
+      max-height: 54px;
+      object-fit: contain;
+      object-position: left;
+      display: block;
+      margin: 2px 6px 18px
+    }
+
+    .cap {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #9fc4c4;
+      font-weight: 800;
+      margin: 6px 10px 10px
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      position: relative;
+      z-index: 1
+    }
+
+    .nav button {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      border: 0;
+      background: transparent;
+      color: #cfe3e3;
+      font: 600 14px 'DM Sans';
+      padding: 13px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: .25s;
+      position: relative
+    }
+
+    .nav button i {
+      width: 20px;
+      text-align: center;
+      font-size: 15px
+    }
+
+    .nav button:hover {
+      background: #ffffff14;
+      color: #fff;
+      transform: translateX(3px)
+    }
+
+    .nav button.active {
+      background: var(--yellow);
+      color: var(--teal-d);
+      font-weight: 800;
+      box-shadow: 0 8px 20px #0004
+    }
+
+    .side-bottom {
+      margin-top: auto;
+      position: relative;
+      z-index: 1;
+      background: #ffffff14;
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #cfe3e3
+    }
+
+    .side-bottom strong {
+      display: block;
+      color: #fff;
+      margin-bottom: 3px
+    }
+
+    .main {
+      margin-left: 280px;
+      flex: 1;
+      min-width: 0;
+      padding: 14px 22px 40px 8px
+    }
+
+    .topbar {
+      position: sticky;
+      top: 14px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      background: #ffffffd9;
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 12px 18px;
+      box-shadow: 0 10px 30px #0b3a3c0f
+    }
+
+    .menu-toggle {
+      display: none;
+      border: 0;
+      background: var(--teal);
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      cursor: pointer
+    }
+
+    .heading h1 {
+      margin: 0;
+      font: 800 20px Manrope, sans-serif
+    }
+
+    .heading p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .search {
+      flex: 1;
+      max-width: 340px;
+      position: relative
+    }
+
+    .search i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8aa5a6;
+      font-size: 13px
+    }
+
+    .search input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--line);
+      background: #f5fafa;
+      border-radius: 12px;
+      padding: 0 14px 0 38px;
+      font: 13px 'DM Sans';
+      outline: none;
+      transition: .25s
+    }
+
+    .search input:focus {
+      border-color: var(--teal);
+      background: #fff;
+      box-shadow: 0 0 0 4px #175e601a
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    .user .who {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25
+    }
+
+    .user small {
+      font-weight: 500;
+      color: var(--muted);
+      font-size: 11px;
+      max-width: 170px;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--yellow), #ffb800);
+      color: var(--teal-d);
+      display: grid;
+      place-items: center;
+      font-weight: 800
+    }
+
+    .logout {
+      border: 0;
+      background: var(--teal-d);
+      color: #fff;
+      font: 700 12px 'DM Sans';
+      padding: 11px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: .25s
+    }
+
+    .logout:hover {
+      background: var(--bad)
+    }
+
+    .content {
+      padding: 22px 0 0
+    }
+
+    .section {
+      display: none
+    }
+
+    .section.active {
+      display: block;
+      animation: fade .5s both
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 26px;
+      padding: 34px clamp(22px, 4vw, 44px) 62px;
+      color: #fff;
+      background: radial-gradient(circle at 85% 15%, #2a8a8d66, transparent 45%), linear-gradient(120deg, #0b3a3c, #175e60);
+      margin-bottom: 22px
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, #ffffff08 0 1px, transparent 1px 56px);
+      animation: grid 14s linear infinite
+    }
+
+    .hero h2 {
+      position: relative;
+      font: 800 clamp(24px, 3vw, 34px) Manrope;
+      margin: 0 0 8px
+    }
+
+    .hero p {
+      position: relative;
+      max-width: 560px;
+      line-height: 1.7;
+      color: #d3e8e8;
+      margin: 0 0 14px;
+      font-size: 14px
+    }
+
+    .tag {
+      position: relative;
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--teal-d);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 6px 14px;
+      border-radius: 30px
+    }
+
+    .hero .road {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 22px;
+      height: 3px;
+      background: repeating-linear-gradient(90deg, var(--yellow) 0 22px, transparent 22px 44px);
+      opacity: .7;
+      animation: road 1s linear infinite
+    }
+
+    .hero .truck {
+      position: absolute;
+      bottom: 30px;
+      left: -80px;
+      font-size: 34px;
+      animation: drive 11s linear infinite
+    }
+
+    .hero .plane {
+      position: absolute;
+      top: 22px;
+      left: -60px;
+      font-size: 24px;
+      opacity: .7;
+      animation: fly 15s linear infinite
+    }
+
+    .track-box {
+      position: relative;
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      max-width: 460px
+    }
+
+    .track-box input {
+      flex: 1;
+      height: 46px;
+      border: 0;
+      border-radius: 12px;
+      padding: 0 16px;
+      font: 14px 'DM Sans';
+      outline: none
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      background: var(--teal);
+      color: #fff;
+      font: 700 12px 'DM Sans';
+      padding: 11px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: .25s
+    }
+
+    .btn:hover {
+      background: var(--teal-d);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px #175e6040
+    }
+
+    .btn.ghost {
+      background: var(--teal-l);
+      color: var(--teal);
+      padding: 7px 13px
+    }
+
+    .btn.ghost:hover {
+      background: var(--teal);
+      color: #fff
+    }
+
+    .btn.yellow {
+      background: var(--yellow);
+      color: var(--teal-d)
+    }
+
+    .session {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 22px
+    }
+
+    .session div {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      animation: rise .6s both
+    }
+
+    .session small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 4px
+    }
+
+    .session strong {
+      font-size: 13px;
+      word-break: break-all
+    }
+
+    .safe {
+      color: var(--ok)
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 22px
+    }
+
+    .stat {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+      transition: .3s;
+      animation: rise .6s both
+    }
+
+    .stat:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 36px #0b3a3c14
+    }
+
+    .stat .ic {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--teal-l);
+      color: var(--teal);
+      display: grid;
+      place-items: center;
+      font-size: 18px
+    }
+
+    .stat span.l {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      margin: 14px 0 4px
+    }
+
+    .stat h3 {
+      margin: 0;
+      font: 800 30px Manrope
+    }
+
+    .stat em {
+      font-style: normal;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ok);
+      background: #e6f6ed;
+      padding: 3px 9px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 8px
+    }
+
+    .stat svg {
+      position: absolute;
+      right: 14px;
+      top: 18px;
+      width: 90px;
+      height: 34px
+    }
+
+    .stat svg polyline {
+      fill: none;
+      stroke: var(--teal);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation: draw 1.6s .3s forwards
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+      margin-bottom: 22px
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      margin-bottom: 22px;
+      animation: rise .6s both
+    }
+
+    .grid2 .panel {
+      margin-bottom: 0
+    }
+
+    .panel h3 {
+      margin: 0 0 4px;
+      font: 800 17px Manrope
+    }
+
+    .desc {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 12.5px
+    }
+
+    .bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+      height: 210px;
+      padding-top: 10px
+    }
+
+    .barcol {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px
+    }
+
+    .bar {
+      width: 100%;
+      max-width: 46px;
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #3aa6a9, var(--teal));
+      transform-origin: bottom;
+      animation: grow 1s both
+    }
+
+    .bar.hi {
+      background: linear-gradient(180deg, #ffe27a, var(--yellow))
+    }
+
+    .barcol small {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .donut-wrap {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      flex-wrap: wrap
+    }
+
+    .donut {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      animation: spin 1.2s both
+    }
+
+    .donut::after {
+      content: "";
+      width: 94px;
+      height: 94px;
+      border-radius: 50%;
+      background: #fff
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      font-size: 12.5px;
+      font-weight: 600
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border-radius: 4px;
+      margin-right: 8px
+    }
+
+    .legend b {
+      margin-left: 8px;
+      color: var(--muted)
+    }
+
+    .feed {
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .feed div {
+      display: flex;
+      gap: 13px;
+      align-items: center
+    }
+
+    .feed .ic {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--teal-l);
+      color: var(--teal);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0
+    }
+
+    .feed b {
+      display: block;
+      font-size: 13px
+    }
+
+    .feed small {
+      color: var(--muted);
+      font-size: 11.5px
+    }
+
+    .meter {
+      margin-bottom: 15px
+    }
+
+    .meter .r {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 7px
+    }
+
+    .meter .r b {
+      color: var(--teal)
+    }
+
+    .meter i {
+      display: block;
+      height: 9px;
+      background: var(--teal-l);
+      border-radius: 20px;
+      overflow: hidden
+    }
+
+    .meter em {
+      display: block;
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, var(--teal), #3aa6a9);
+      animation: fill 1.2s both
+    }
+
+    .rows {
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      transition: .25s
+    }
+
+    .row:hover {
+      border-color: var(--teal);
+      transform: translateX(4px)
+    }
+
+    .row .ic {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: var(--teal-l);
+      color: var(--teal);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0
+    }
+
+    .row div {
+      flex: 1
+    }
+
+    .row b {
+      display: block;
+      font-size: 13px
+    }
+
+    .row small {
+      color: var(--muted);
+      font-size: 11.5px
+    }
+
+    .row strong {
+      font-size: 13px;
+      color: var(--teal)
+    }
+
+    .tips {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px
+    }
+
+    .tips div {
+      background: #f5fafa;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid var(--line)
+    }
+
+    .tips b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px
+    }
+
+    .tips b i {
+      color: var(--teal);
+      margin-right: 7px
+    }
+
+    .tips p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.6
+    }
+
+    .intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px
+    }
+
+    .intro h2 {
+      margin: 0 0 5px;
+      font: 800 26px Manrope
+    }
+
+    .intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 620px;
+      line-height: 1.6
+    }
+
+    .acts {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 22px
+    }
+
+    .mini div {
+      background: linear-gradient(135deg, #fff, #f1f8f8);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      border-left: 5px solid var(--yellow)
+    }
+
+    .mini small {
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .mini strong {
+      display: block;
+      font: 800 26px Manrope;
+      margin: 5px 0
+    }
+
+    .mini span {
+      font-size: 12px;
+      color: var(--teal);
+      font-weight: 600
+    }
+
+    .table-wrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 640px
+    }
+
+    th {
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: .8px;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding: 12px 14px;
+      background: #f5fafa;
+      white-space: nowrap
+    }
+
+    th:first-child {
+      border-radius: 12px 0 0 12px
+    }
+
+    th:last-child {
+      border-radius: 0 12px 12px 0
+    }
+
+    td {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap
+    }
+
+    tbody tr {
+      transition: .2s
+    }
+
+    tbody tr:hover {
+      background: #f5fafa
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 20px
+    }
+
+    .pill.ok {
+      background: #e6f6ed;
+      color: var(--ok)
+    }
+
+    .pill.info {
+      background: #e4efff;
+      color: var(--info)
+    }
+
+    .pill.bad {
+      background: #fde8e8;
+      color: var(--bad)
+    }
+
+    .pill.warn {
+      background: #fff3d6;
+      color: #b87800
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px
+    }
+
+    .filters button {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 9px 16px;
+      border-radius: 30px;
+      font: 700 12px 'DM Sans';
+      cursor: pointer;
+      transition: .25s;
+      color: var(--muted)
+    }
+
+    .filters button.on,
+    .filters button:hover {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal)
+    }
+
+    .settings .row {
+      justify-content: space-between
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      font: 13px 'DM Sans';
+      outline: none;
+      resize: vertical;
+      background: #f9fcfc
+    }
+
+    textarea:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 4px #175e601a
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 34px;
+      margin-top: 8px
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 11px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--line)
+    }
+
+    .tl {
+      position: relative;
+      margin-bottom: 22px;
+      animation: rise .5s both
+    }
+
+    .tl::before {
+      content: "";
+      position: absolute;
+      left: -30px;
+      top: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--line)
+    }
+
+    .tl.done::before {
+      background: var(--ok);
+      border-color: #c8ecd6
+    }
+
+    .tl.now::before {
+      background: var(--yellow);
+      border-color: #fff0b0;
+      animation: ping 1.6s infinite
+    }
+
+    .tl b {
+      display: block;
+      font-size: 13.5px
+    }
+
+    .tl small {
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--ok);
+      margin-top: 10px;
+      min-height: 16px
+    }
+
+    .empty {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(14px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes grid {
+      to {
+        background-position: 56px 0
+      }
+    }
+
+    @keyframes road {
+      to {
+        background-position: -44px 0
+      }
+    }
+
+    @keyframes drive {
+      to {
+        left: 105%
+      }
+    }
+
+    @keyframes fly {
+      to {
+        left: 105%;
+        top: 10px
+      }
+    }
+
+    @keyframes pulse {
+      50% {
+        transform: scale(1.1);
+        opacity: .6
+      }
+    }
+
+    @keyframes grow {
+      from {
+        transform: scaleY(0)
+      }
+    }
+
+    @keyframes fill {
+      from {
+        width: 0 !important
+      }
+    }
+
+    @keyframes draw {
+      to {
+        stroke-dashoffset: 0
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(-120deg) scale(.6);
+        opacity: 0
+      }
+    }
+
+    @keyframes ping {
+      50% {
+        box-shadow: 0 0 0 8px #ffd54a40
+      }
+    }
+
+    @media(max-width:1000px) {
+      .grid2 {
+        grid-template-columns: 1fr
+      }
+
+      .session {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:860px) {
+      .sidebar {
+        transform: translateX(-120%)
+      }
+
+      .sidebar.open {
+        transform: none
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 12px
+      }
+
+      .menu-toggle {
+        display: block
+      }
+
+      .search,
+      .user .who {
+        display: none
+      }
+
+      .topbar {
+        top: 12px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important
+      }
+
+      .stat svg polyline {
+        stroke-dashoffset: 0
+      }
+    }
+
+    html, body {
+
+    overflow-x: hidden;
+
+    width: 100%;
+
+}
+ 
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="index.html" aria-label="Stackly Logistics home"><img src="assets/img/logo.webp"
+          alt="Stackly Logistics logo" /></a>
+      <div class="cap">ADMIN WORKSPACE</div>
+      <nav class="nav"><button class="active" data-section="overview" data-title="Overview"
+          data-sub="Logistics operations at a glance"><i class="fa-solid fa-chart-pie"></i>Overview</button><button
+          class="" data-section="customers" data-title="Customers" data-sub="Client accounts and activity"><i
+            class="fa-solid fa-users"></i>Customers</button><button class="" data-section="shipments"
+          data-title="Shipments" data-sub="Bookings, routes and delivery status"><i
+            class="fa-solid fa-boxes-stacked"></i>Shipments</button><button class="" data-section="fleet"
+          data-title="Fleet & Drivers" data-sub="Vehicles, drivers and maintenance"><i
+            class="fa-solid fa-truck"></i>Fleet & Drivers</button><button class="" data-section="reports"
+          data-title="Reports" data-sub="Performance and analytics"><i
+            class="fa-solid fa-chart-column"></i>Reports</button><button class="" data-section="settings"
+          data-title="Settings" data-sub="Account and workspace preferences"><i
+            class="fa-solid fa-gear"></i>Settings</button></nav>
+      <div class="side-bottom"><strong>Stackly Logistics</strong>Manage shipments, fleet and deliveries from one place.
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:12px"><button class="menu-toggle" id="menu"
+            aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
+          <div class="heading">
+            <h1 id="pageTitle">Overview</h1>
+            <p id="pageSub">Logistics operations at a glance</p>
+          </div>
+        </div>
+        <div class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="search"
+            placeholder="Search in this page…" /></div>
+        <div class="user">
+          <div class="avatar" id="avatar">AD</div>
+          <div class="who"><span id="userName">User</span><small id="headerEmail">Signed-in email</small></div><button
+            class="logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+        </div>
+      </header>
+      <div class="content">
+        <section class="section active" id="overview">
+          <div class="hero">
+            <h2 id="welcomeTitle">Good morning, Admin</h2>
+            <p>Here is the latest overview of your logistics network. Review shipment activity, fleet status and
+              delivery performance.</p><span class="tag">NETWORK OVERVIEW · 2026</span>
+            <div class="road"></div><i class="fa-solid fa-plane plane"></i><i class="fa-solid fa-truck-fast truck"></i>
+          </div>
+          <div class="session" aria-label="Account session details">
+            <div><small>Signed-in account</small><strong id="sessionEmail">Not available</strong></div>
+            <div><small>Login date and time</small><strong id="sessionLoginTime">Not available</strong></div>
+            <div><small>Password status</small><strong class="safe">Protected · Never displayed</strong></div>
+          </div>
+          <div class="stats" id="adminStats"></div>
+          <div class="grid2">
+            <article class="panel">
+              <h3>Monthly shipments</h3>
+              <p class="desc">Total shipments handled this year</p>
+              <div class="bars" id="shipBars"></div>
+            </article>
+            <article class="panel">
+              <h3>Shipments by mode</h3>
+              <p class="desc">Share of freight volume</p>
+              <div class="donut-wrap" id="modeDonut"></div>
+            </article>
+          </div>
+          <div style="height:22px"></div>
+          <div class="grid2">
+            <article class="panel">
+              <h3>Recent shipments</h3>
+              <p class="desc">Latest bookings across the network</p>
+              <div class="table-wrap">
+                <table id="recentTbl"></table>
+              </div>
+            </article>
+            <article class="panel">
+              <h3>Recent activity</h3>
+              <p class="desc">Latest updates from operations</p>
+              <div class="feed" id="actFeed"></div>
+            </article>
+          </div>
+          <div style="height:22px"></div>
+          <div class="grid2">
+            <article class="panel">
+              <h3>Dispatch planning</h3>
+              <p class="desc">Key activities to keep deliveries on schedule</p>
+              <div class="rows" id="planRows"></div>
+            </article>
+            <article class="panel">
+              <h3>Route performance</h3>
+              <p class="desc">Volume on major freight corridors</p>
+              <div id="routeMeters"></div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="customers">
+          <div class="intro">
+            <div>
+              <h2>Customer Management</h2>
+              <p>Review client profiles, company details, shipping preferences and account activity across the Stackly
+                network.</p>
+            </div>
+            <div class="acts"><a class="btn yellow" href="404.html"><i class="fa-solid fa-user-plus"></i> Add
+                Customer</a><a class="btn" href="404.html"><i class="fa-solid fa-file-export"></i> Export Directory</a>
+            </div>
+          </div>
+          <div class="mini" id="custMini"></div>
+          <article class="panel">
+            <h3>Customer directory</h3>
+            <p class="desc">Customer contact and shipping information. Sample records for demonstration.</p>
+            <div class="table-wrap">
+              <table id="custTbl"></table>
+            </div>
+          </article>
+          <div class="grid2">
+            <article class="panel">
+              <h3>Customer onboarding</h3>
+              <p class="desc">Stages in the registration process</p>
+              <div class="rows" id="onbRows"></div>
+            </article>
+            <article class="panel">
+              <h3>Regional coverage</h3>
+              <p class="desc">Customers by major city</p>
+              <div id="regMeters"></div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="shipments">
+          <div class="intro">
+            <div>
+              <h2>Shipment Management</h2>
+              <p>Track bookings, routes, cargo weight, estimated arrival and delivery status across road, air, ocean and
+                rail freight.</p>
+            </div>
+            <div class="acts"><a class="btn yellow" href="404.html"><i class="fa-solid fa-plus"></i> New Shipment</a><a
+                class="btn" href="404.html"><i class="fa-solid fa-calendar-days"></i> Dispatch Calendar</a></div>
+          </div>
+          <div class="mini" id="shipMini"></div>
+          <article class="panel">
+            <h3>Shipment register</h3>
+            <p class="desc">Active and recent shipments. Sample records for demonstration.</p>
+            <div class="filters" id="shipFilters"></div>
+            <div class="table-wrap">
+              <table id="shipTbl"></table>
+            </div>
+          </article>
+          <div class="grid2">
+            <article class="panel">
+              <h3>Shipment handling checklist</h3>
+              <p class="desc">Routine monitoring areas for dispatch teams</p>
+              <div class="tips" id="shipTips"></div>
+            </article>
+            <article class="panel">
+              <h3>Delivery priorities</h3>
+              <p class="desc">Activities to review today</p>
+              <div class="rows" id="prioRows"></div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="fleet">
+          <div class="intro">
+            <div>
+              <h2>Fleet &amp; Driver Management</h2>
+              <p>Monitor vehicles, assigned drivers, live locations, fuel levels and maintenance schedules.</p>
+            </div>
+            <div class="acts"><a class="btn yellow" href="404.html"><i class="fa-solid fa-plus"></i> Add Vehicle</a><a
+                class="btn" href="404.html"><i class="fa-solid fa-user-plus"></i> Add Driver</a></div>
+          </div>
+          <div class="mini" id="fleetMini"></div>
+          <article class="panel">
+            <h3>Fleet register</h3>
+            <p class="desc">Current vehicle status. Sample records for demonstration.</p>
+            <div class="table-wrap">
+              <table id="fleetTbl"></table>
+            </div>
+          </article>
+          <div class="grid2">
+            <article class="panel">
+              <h3>Maintenance checklist</h3>
+              <p class="desc">Key vehicle care steps</p>
+              <div class="rows" id="maintRows"></div>
+            </article>
+            <article class="panel">
+              <h3>Fleet utilisation</h3>
+              <p class="desc">Vehicle usage by type</p>
+              <div id="utilMeters"></div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="reports">
+          <div class="intro">
+            <div>
+              <h2>Reports &amp; Analytics</h2>
+              <p>Explore delivery performance, fuel efficiency, revenue and regional activity summaries.</p>
+            </div>
+            <div class="acts"><a class="btn yellow" href="404.html"><i class="fa-solid fa-file-pdf"></i> Generate
+                Report</a><a class="btn" href="404.html"><i class="fa-solid fa-chart-line"></i> View Analytics</a></div>
+          </div>
+          <div class="stats" id="repStats"></div>
+          <div class="grid2">
+            <article class="panel">
+              <h3>Performance summary</h3>
+              <p class="desc">Key indicators for the current period</p>
+              <div id="perfMeters"></div>
+            </article>
+            <article class="panel">
+              <h3>Report categories</h3>
+              <p class="desc">Choose a report type to open</p>
+              <div class="rows" id="repRows"></div>
+            </article>
+          </div>
+          <div style="height:22px"></div>
+          <article class="panel">
+            <h3>Recent report activity</h3>
+            <p class="desc">Sample report history</p>
+            <div class="table-wrap">
+              <table id="repTbl"></table>
+            </div>
+          </article>
+        </section>
+        <section class="section settings" id="settings">
+          <div class="intro">
+            <div>
+              <h2>Dashboard Settings</h2>
+              <p>Review account preferences, access controls, notifications and data-management options.</p>
+            </div>
+            <div class="acts"><a class="btn yellow" href="404.html"><i class="fa-solid fa-sliders"></i> Manage
+                Preferences</a><a class="btn" href="404.html"><i class="fa-solid fa-key"></i> Change Password</a></div>
+          </div>
+          <div class="grid2">
+            <article class="panel">
+              <h3>Administrator profile</h3>
+              <p class="desc">Current signed-in account information</p>
+              <div class="rows">
+                <div class="row"><span class="ic"><i class="fa-solid fa-envelope"></i></span>
+                  <div><b>Account email</b><small id="profileEmail">Not available</small></div>
+                </div>
+                <div class="row"><span class="ic"><i class="fa-solid fa-user-shield"></i></span>
+                  <div><b>Account role</b><small id="accountRole">Administrator</small></div>
+                </div>
+                <div class="row"><span class="ic"><i class="fa-solid fa-clock"></i></span>
+                  <div><b>Last login</b><small id="profileLoginTime">Not available</small></div>
+                </div>
+                <div class="row"><span class="ic"><i class="fa-solid fa-lock"></i></span>
+                  <div><b>Password security</b><small>Password is protected and is never displayed.</small></div>
+                </div>
+              </div>
+            </article>
+            <article class="panel">
+              <h3>Workspace preferences</h3>
+              <p class="desc">Available configuration areas</p>
+              <div class="rows" id="prefRows"></div>
+            </article>
+          </div>
+          <div style="height:22px"></div>
+          <article class="panel">
+            <h3>System information</h3>
+            <p class="desc">Dashboard environment and operational notes</p>
+            <div class="tips" id="sysTips"></div>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    const REQ = 'admin';
+    let session = null;
+    try { session = JSON.parse(sessionStorage.getItem('stacklyLogin') || 'null') } catch (e) { }
+    if (!session || session.role !== REQ) { location.replace('login.html') } // role guard: remove this line while previewing the file directly
+    function logout() { sessionStorage.removeItem('stacklyLogin'); location.href = 'login.html' }
+    const cls = s => { s = s.toLowerCase(); return /deliver|verified|active|ready|paid|on track|done|completed|available/.test(s) ? 'ok' : /transit|dispatch|scheduled|loading|on route/.test(s) ? 'info' : /delay|overdue|maint|issue/.test(s) ? 'bad' : 'warn' };
+    const cell = c => { c = String(c); if (c[0] === '~') { c = c.slice(1); return '<span class="pill ' + cls(c) + '">' + c + '</span>' } if (c[0] === '^') return '<a class="btn ghost" href="404.html">' + c.slice(1) + '</a>'; return c };
+    function table(id, h, rows) { $(id).innerHTML = '<thead><tr>' + h.map(x => '<th>' + x + '</th>').join('') + '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(c => '<td>' + cell(c) + '</td>').join('') + '</tr>').join('') + '</tbody>' }
+    function stats(id, a) {
+      $(id).innerHTML = a.map((s, i) => { const pts = [0, 1, 2, 3, 4, 5].map(k => (k * 18) + ',' + (30 - ((Math.sin(i * 2 + k * 1.3) + 1) * 10 + (k * 1.6)))).join(' '); return '<article class="stat" style="animation-delay:' + i * .08 + 's"><div class="ic"><i class="fa-solid ' + s[0] + '"></i></div><svg viewBox="0 0 90 34"><polyline points="' + pts + '"/></svg><span class="l">' + s[1] + '</span><h3 data-n="' + s[2] + '" data-s="' + (s[3] || '') + '">0</h3><em>' + s[4] + '</em></article>' }).join('');
+      document.querySelectorAll('#' + id + ' h3').forEach(h => { const n = +h.dataset.n, sf = h.dataset.s, d = n % 1 ? 1 : 0, t0 = performance.now(); (function f(t) { const p = Math.min((t - t0) / 1100, 1), v = n * (1 - Math.pow(1 - p, 3)); h.textContent = v.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }) + sf; if (p < 1) requestAnimationFrame(f) })(t0) })
+    }
+    function bars(id, a) { const m = Math.max(...a.map(x => x[1])); $(id).innerHTML = a.map((x, i) => '<div class="barcol"><div class="bar' + (i == a.length - 1 ? ' hi' : '') + '" style="height:' + x[1] / m * 100 + '%;animation-delay:' + i * .1 + 's" title="' + x[1] + '"></div><small>' + x[0] + '</small></div>').join('') }
+    function donut(id, a) { let acc = 0; const g = a.map(x => { const s = acc; acc += x[1]; return x[2] + ' ' + s + '% ' + acc + '%' }).join(','); $(id).innerHTML = '<div class="donut" style="background:conic-gradient(' + g + ')"></div><div class="legend">' + a.map(x => '<span><i style="background:' + x[2] + '"></i>' + x[0] + '<b>' + x[1] + '%</b></span>').join('') + '</div>' }
+    function meters(id, a) { $(id).innerHTML = a.map(x => '<div class="meter"><div class="r"><span>' + x[0] + '</span><b>' + x[1] + '</b></div><i><em style="width:' + x[2] + '%"></em></i></div>').join('') }
+    function feed(id, a) { $(id).innerHTML = a.map(x => '<div><span class="ic"><i class="fa-solid ' + x[0] + '"></i></span><p style="margin:0"><b>' + x[1] + '</b><small>' + x[2] + '</small></p></div>').join('') }
+    function rows(id, a) { $(id).innerHTML = a.map(x => '<div class="row"><span class="ic"><i class="fa-solid ' + x[0] + '"></i></span><div><b>' + x[1] + '</b><small>' + x[2] + '</small></div>' + (x[3][0] === '^' ? '<a class="btn ghost" href="404.html">' + x[3].slice(1) + '</a>' : '<strong>' + x[3] + '</strong>') + '</div>').join('') }
+    function tips(id, a) { $(id).innerHTML = a.map(x => '<div><b><i class="fa-solid ' + x[0] + '"></i>' + x[1] + '</b><p>' + x[2] + '</p></div>').join('') }
+    function mini(id, a) { $(id).innerHTML = a.map(x => '<div><small>' + x[0] + '</small><strong>' + x[1] + '</strong><span>' + x[2] + '</span></div>').join('') }
+    // navigation
+    const sections = [...document.querySelectorAll('.section')], nav = [...document.querySelectorAll('.nav button')];
+    nav.forEach(b => b.addEventListener('click', () => { nav.forEach(x => x.classList.remove('active')); b.classList.add('active'); sections.forEach(s => s.classList.toggle('active', s.id === b.dataset.section)); $('pageTitle').textContent = b.dataset.title; $('pageSub').textContent = b.dataset.sub; $('sidebar').classList.remove('open'); $('search').value = ''; filter(''); window.scrollTo({ top: 0, behavior: 'smooth' }) }));
+    $('menu').addEventListener('click', () => $('sidebar').classList.toggle('open'));
+    function filter(q) { q = q.toLowerCase(); document.querySelectorAll('.section.active tbody tr').forEach(r => r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none') }
+    $('search').addEventListener('input', e => filter(e.target.value));
+    // session details (password is never stored or shown)
+    (function () {
+      try {
+        if (!session || !session.email) return;
+        const email = String(session.email).trim().toLowerCase(), d = session.loginTime ? new Date(session.loginTime) : null;
+        const label = d && !isNaN(d) ? d.toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'short' }) : 'Unavailable';
+        const name = email.split('@')[0].replace(/[._-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        ['sessionEmail', 'profileEmail', 'headerEmail'].forEach(i => { const e = $(i); if (e) e.textContent = email });
+        ['sessionLoginTime', 'profileLoginTime'].forEach(i => { const e = $(i); if (e) e.textContent = label });
+        $('userName').textContent = REQ === 'admin' ? 'Administrator' : name;
+        $('avatar').textContent = (REQ === 'admin' ? 'AD' : name.slice(0, 2)).toUpperCase();
+        const w = $('welcomeTitle'); if (w) w.textContent = REQ === 'admin' ? 'Good morning, Admin' : 'Welcome back, ' + name + '!';
+        const r = $('accountRole'); if (r) r.textContent = REQ === 'admin' ? 'Administrator' : 'Customer';
+      } catch (e) { console.warn('Could not load Stackly login details.', e) }
+    })();
+
+
+    stats('adminStats', [['fa-boxes-stacked', 'Active Shipments', 3482, '', '↑ 8.4% this month'], ['fa-users', 'Registered Customers', 1284, '', '↑ 5.2% this quarter'], ['fa-truck', 'Fleet Vehicles', 365, '', '12 in maintenance'], ['fa-clock', 'On-Time Delivery', 94.6, '%', '↑ 2.1% vs last month']]);
+    bars('shipBars', [['Jan', 320], ['Feb', 410], ['Mar', 380], ['Apr', 560], ['May', 500], ['Jun', 780]]);
+    donut('modeDonut', [['Road', 46, '#175e60'], ['Ocean', 22, '#2b7de9'], ['Air', 18, '#ffd54a'], ['Rail', 9, '#e69b00'], ['Warehouse', 5, '#8aa5a6']]);
+    table('recentTbl', ['Shipment', 'Customer', 'Route', 'Status'], [['SHP-8801', 'Apex Traders', 'Chennai → Salem', '~In Transit'], ['SHP-8802', 'Nova Textiles', 'Mumbai → Dubai', '~Delivered'], ['SHP-8803', 'Greenline Foods', 'Salem → Bengaluru', '~Pending'], ['SHP-8804', 'Orbit Steel', 'Kolkata → Delhi', '~Delayed']]);
+    feed('actFeed', [['fa-user-plus', 'New customer registered', 'Apex Traders · 18 minutes ago'], ['fa-circle-check', 'Shipment delivered', 'SHP-8802 · 2 hours ago'], ['fa-triangle-exclamation', 'Delay reported on NH-44', 'Truck TN-30-4521 · Yesterday'], ['fa-file-invoice', 'Invoice generated', 'INV-3320 · Yesterday']]);
+    rows('planRows', [['fa-route', 'Route optimisation', 'Review long-haul corridors for fuel savings', '82%'], ['fa-warehouse', 'Warehouse capacity check', 'Confirm storage space for incoming cargo', '68%'], ['fa-truck-ramp-box', 'Driver scheduling', 'Coordinate pickups and delivery slots', '45%']]);
+    meters('routeMeters', [['Chennai ⇄ Bengaluru', '320 trips', 82], ['Mumbai ⇄ Delhi', '275 trips', 70], ['Salem ⇄ Coimbatore', '190 trips', 52], ['Kolkata ⇄ Hyderabad', '140 trips', 39]]);
+    mini('custMini', [['Total registered customers', '1,284', '8.4% growth this quarter'], ['Active customer accounts', '1,146', '89% of registered customers'], ['Accounts awaiting review', '38', 'Require admin attention']]);
+    table('custTbl', ['Customer ID', 'Company', 'City', 'Shipments', 'Main service', 'Last activity', 'Status', 'Action'], [['CUS-1024', 'Apex Traders', 'Chennai', '128', 'Road Freight', 'Today', '~Active', '^View'], ['CUS-1025', 'Nova Textiles', 'Mumbai', '86', 'Air Cargo', 'Yesterday', '~Active', '^View'], ['CUS-1026', 'Greenline Foods', 'Salem', '64', 'Warehousing', '08 Nov 2026', '~Review', '^Review'], ['CUS-1027', 'Orbit Steel', 'Kolkata', '152', 'Rail Freight', '07 Nov 2026', '~Active', '^View'], ['CUS-1028', 'Bluewave Exports', 'Kochi', '97', 'Ocean Freight', '06 Nov 2026', '~Active', '^View']]);
+    rows('onbRows', [['fa-id-card', 'Profile submitted', 'Company and contact details received', '1,284'], ['fa-clipboard-check', 'Documents verified', 'GST and business details reviewed', '1,246'], ['fa-circle-check', 'Account activated', 'Customer access enabled', '1,146']]);
+    meters('regMeters', [['Chennai', '320 customers', 82], ['Mumbai', '185 customers', 64], ['Bengaluru', '140 customers', 48], ['Salem', '112 customers', 39]]);
+    mini('shipMini', [['Total active shipments', '3,482', '↑ 8.4% this month'], ['Delivered this month', '2,914', '94.6% on time'], ['Delayed shipments', '27', 'Require follow-up']]);
+    const SH = [['SHP-8801', 'Apex Traders', 'Chennai → Salem', 'Road', '2.4 t', '12 Nov', '~In Transit', '^Track'], ['SHP-8802', 'Nova Textiles', 'Mumbai → Dubai', 'Air', '850 kg', '10 Nov', '~Delivered', '^View'], ['SHP-8803', 'Greenline Foods', 'Salem → Bengaluru', 'Road', '1.2 t', '14 Nov', '~Pending', '^Review'], ['SHP-8804', 'Orbit Steel', 'Kolkata → Delhi', 'Rail', '18 t', '16 Nov', '~Delayed', '^Review'], ['SHP-8805', 'Bluewave Exports', 'Kochi → Singapore', 'Ocean', '22 t', '25 Nov', '~In Transit', '^Track'], ['SHP-8806', 'Apex Traders', 'Chennai → Madurai', 'Road', '640 kg', '11 Nov', '~Delivered', '^View']];
+    const SH_H = ['Shipment', 'Customer', 'Route', 'Mode', 'Weight', 'ETA', 'Status', 'Action'];
+    table('shipTbl', SH_H, SH);
+    $('shipFilters').innerHTML = ['All', 'In Transit', 'Delivered', 'Pending', 'Delayed'].map((f, i) => '<button class="' + (i ? '' : 'on') + '">' + f + '</button>').join('');
+    $('shipFilters').addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') return;[...$('shipFilters').children].forEach(b => b.classList.remove('on')); e.target.classList.add('on'); const f = e.target.textContent; table('shipTbl', SH_H, f === 'All' ? SH : SH.filter(r => r[6] === '~' + f)) });
+    tips('shipTips', [['fa-box-open', 'Cargo inspection', 'Record cargo condition and packaging before dispatch.'], ['fa-location-dot', 'Live tracking', 'Confirm GPS updates for all vehicles on active routes.'], ['fa-file-signature', 'Documentation', 'Verify e-way bills, invoices and customs paperwork.']]);
+    rows('prioRows', [['fa-cloud-rain', 'Weather readiness', 'Check rain alerts on NH-44 and NH-48', 'High'], ['fa-triangle-exclamation', 'Delayed shipments', 'Contact customers for 27 delayed orders', 'High'], ['fa-gas-pump', 'Fuel planning', 'Review refuelling stops for long-haul trips', 'Medium']]);
+    mini('fleetMini', [['Total fleet vehicles', '365', '12 under maintenance'], ['Active drivers', '298', 'Licensed and verified'], ['Fuel efficiency', '5.8 km/l', '↑ 4% vs last month']]);
+    table('fleetTbl', ['Vehicle ID', 'Type', 'Driver', 'Current location', 'Load', 'Fuel', 'Status', 'Action'], [['TN-30-4521', 'Heavy Truck', 'R. Kumar', 'NH-44 · Krishnagiri', '18 t', '72%', '~On Route', '^Details'], ['TN-11-2210', 'Container', 'M. Selvam', 'Chennai Port', '22 t', '55%', '~Loading', '^Details'], ['KA-05-9087', 'Mini Truck', 'S. Arun', 'Bengaluru Hub', '1.5 t', '88%', '~Available', '^Details'], ['MH-12-3345', 'Trailer', 'P. Naik', 'Pune Depot', '—', '40%', '~Maintenance', '^Review'], ['TN-33-7712', 'Tanker', 'K. Raja', 'Salem Yard', '12 kL', '63%', '~On Route', '^Details']]);
+    rows('maintRows', [['fa-oil-can', 'Engine service', 'Scheduled every 10,000 km', 'Done'], ['fa-circle-notch', 'Tyre inspection', 'Check tread and pressure weekly', 'Review'], ['fa-screwdriver-wrench', 'Brake check', 'Pending for 12 vehicles', 'Pending']]);
+    meters('utilMeters', [['Heavy trucks', 'Utilisation', 86], ['Containers', 'Utilisation', 74], ['Mini trucks', 'Utilisation', 63], ['Tankers', 'Utilisation', 48]]);
+    stats('repStats', [['fa-gauge-high', 'Avg. delivery time', 2.8, ' days', '↓ 0.3 days faster'], ['fa-circle-check', 'Delivery success', 97, '%', 'Current period'], ['fa-gas-pump', 'Fuel usage', 8, '%', '↓ vs prior period'], ['fa-map-location-dot', 'Active routes', 48, '', 'Across 12 regions']]);
+    meters('perfMeters', [['Customer registration target', '84%', 84], ['Shipment tracking completion', '92%', 92], ['Fleet inspection completion', '76%', 76], ['Invoice collection', '68%', 68]]);
+    rows('repRows', [['fa-users', 'Customer activity report', 'Registrations, cities and account status', '^Open'], ['fa-truck', 'Fleet performance report', 'Utilisation, fuel and maintenance', '^Open'], ['fa-boxes-stacked', 'Shipment summary report', 'Volume, delays and delivery status', '^Open']]);
+    table('repTbl', ['Report', 'Period', 'Generated', 'Prepared by', 'Status', 'Action'], [['Monthly Shipment Summary', 'October 2026', '02 Nov 2026', 'Administrator', '~Ready', '^View'], ['Fleet Maintenance Review', 'November 2026', '10 Nov 2026', 'Fleet Operations', '~Ready', '^View'], ['Customer Registration Summary', 'November 2026', '11 Nov 2026', 'Administrator', '~Draft', '^Open']]);
+    rows('prefRows', [['fa-bell', 'Notification preferences', 'Alerts for delays and new bookings', '^Configure'], ['fa-user-lock', 'Access management', 'Review roles and permissions', '^Manage'], ['fa-map', 'Regional preferences', 'Set preferred regions and route filters', '^Update'], ['fa-shield-halved', 'Data and privacy', 'Review retention and security', '^Review']]);
+    tips('sysTips', [['fa-database', 'Sample data', 'This front-end dashboard shows sample logistics records. Connect a secure backend for live data.'], ['fa-shield-halved', 'Account safety', 'Never store or display a plain-text password in browser storage or dashboard screens.'], ['fa-headset', 'Support', 'Use the support page to request help with access or configuration.']]);
+
+  </script>
+</body>
+
+</html>
